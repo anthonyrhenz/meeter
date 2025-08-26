@@ -1,3 +1,7 @@
-CREATE EXTENSION IF NOT EXISTS vector;
--- Will succeed only if extension is available in the image
-CREATE EXTENSION IF NOT EXISTS pgvectorscale;
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS vector;
+  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name='pgvectorscale') THEN
+    CREATE EXTENSION IF NOT EXISTS pgvectorscale;
+  END IF;
+END$$;
