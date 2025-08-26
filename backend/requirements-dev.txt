@@ -1,0 +1,7 @@
+debugpy>=1.8
+ipython>=8.25
+pytest>=8.2
+pytest-django>=4.8
+mypy>=1.10
+black>=24.3
+ruff>=0.5

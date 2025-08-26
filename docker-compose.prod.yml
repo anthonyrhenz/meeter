@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    command: gunicorn meeter_platform.asgi:application -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 --workers 2
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      CHANNELS_REDIS_URL: ${CHANNELS_REDIS_URL}
+    depends_on: [db, redis]
+
+  llm_proxy:
+    image: ghcr.io/berriai/litellm:main-stable
+    restart: unless-stopped
+    env_file: .env
+    command: --config /app/config.yaml --port 4000
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml:ro
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    depends_on: [backend]
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/includes:/etc/nginx/includes:ro
+      - ./nginx/sites-available/meeter.conf:/etc/nginx/sites-available/meeter.conf:ro
+      - frontend_dist:/usr/share/nginx/html
+
+volumes:
+  postgres_data:
+  frontend_dist:
