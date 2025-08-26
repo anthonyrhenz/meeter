@@ -1,0 +1,33 @@
+---
+alwaysApply: true
+description: Always consult the latest docs via Context7 MCP tools during development
+---
+
+## Use latest documentation via Context7 MCP
+
+When writing or updating code, first consult the most up-to-date official documentation using the Context7 MCP tools. This ensures APIs, configuration, and patterns match current guidance.
+
+- **Resolve library**: Use the resolver to obtain the exact Context7-compatible library ID for a package or repo name. Prefer authoritative libraries and higher trust scores.
+- **Fetch docs**: Retrieve documentation with the resolved ID, optionally scoping by topic and adjusting token limits as needed to get sufficient context.
+- **Prefer latest versions**: When multiple versions are available, favor the newest stable version unless the project is pinned to a specific version.
+- **Disambiguate**: If multiple plausible libraries match, pick the most relevant one but acknowledge alternatives; refine the query when necessary.
+- **Validate before coding**: Check APIs, migration notes, and deprecations in docs prior to implementation or refactors.
+
+### Recommended flow
+
+1. Resolve the library ID using its name (e.g., "react", "next.js", "supabase").
+2. Fetch the docs with the resolved ID; pass a topic such as "hooks", "routing", or "migrations" when helpful.
+3. Implement changes guided by the fetched docs; re-check docs when encountering deprecations or breaking changes.
+
+This rule applies to all code changes across the repository.
+
+### How to use Context7 effectively
+
+- Prefer official, authoritative libraries with high trust scores.
+  - Example: React → `/reactjs/react.dev` (preferred official docs).
+- Fetch focused topics for precision and smaller payloads.
+  - Examples: `hooks`, `useEffect`, `server components`, `migrations`, `routing`.
+- Adjust token limits when deeper context is needed.
+- If results look off, refine the topic or pick an alternative library match.
+- Before coding, verify APIs, deprecations, and migration notes from the fetched docs.
+- Capture key references (title + URL) in PR descriptions or code comments when decisions rely on docs.

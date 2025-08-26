@@ -5,11 +5,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meeter</title>
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f5f7fb" media="(prefers-color-scheme: light)">
 </head>
 
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="speculationrules">
+        {
+            "prefetch": [
+                { "source": "document", "where": { "and": [ { "selector": ".tab" } ] }, "eagerness": "moderate" }
+            ]
+        }
+    </script>
+    <script>
+        // Window controls (stub). Requires @tauri-apps/plugin-window or api/window in a real app.
+        window.addEventListener('DOMContentLoaded', () => {
+            const byAction = (a) => document.querySelector(`[data-action="${a}"]`)
+            const min = byAction('minimize')
+            const max = byAction('maximize')
+            const close = byAction('close')
+            min && min.addEventListener('click', () => console.log('minimize'))
+            max && max.addEventListener('click', () => console.log('toggleMaximize'))
+            close && close.addEventListener('click', () => console.log('close'))
+        })
+    </script>
 </body>
 
 </html>
