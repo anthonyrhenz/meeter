@@ -4,9 +4,9 @@ organism live — Mirai overlays realtime, context‑aware knowledge while you m
 
 ## 🌐 Project Overview
 
-This project uses gpt-oss-[20/120]b for performing realtime intelligent decision making in functional environments using a combination of ultra low latency inference and an AI-driven architecture.
+This project uses gpt-oss-20b/120b for performing realtime intelligent decision making in functional environments using a combination of ultra low latency inference and an AI-driven architecture.
 
-Mirai is a desktop overlay that listens to your system audio, transcribes meetings with diarization, optionally understands low‑FPS screen context, and surfaces concise, actionable "context cards" from your knowledgebase. It routes fast reasoning through Groq (via LiteLLM) using GPT‑OSS‑20B/120B, can update your knowledgebase with summaries and action items, exposes a stream for smart glasses, and includes a voice agent (Mirai) for conversational control.
+Mirai is a desktop overlay that listens to your system audio, transcribes meetings with diarization, optionally understands low‑FPS screen context, and surfaces concise, actionable "context cards" from your knowledgebase. It routes fast reasoning through Groq (via LiteLLM) using gpt-oss‑20b/120b, can update your knowledgebase with summaries and action items, exposes a stream for smart glasses, and includes a voice agent (Mirai) for conversational control.
 
 Key capabilities:
 
@@ -22,9 +22,9 @@ See the full product/technical spec in `docs/Idea.md`.
 
 ## 🏆 Submission Categories
 
-> 🏁 Best Overall ;)
-> 🏁 Weirdest Hardware
-> 🏁 Most Useful Fine‑Tune
+> 🏁 Best Overall ;)  
+> 🏁 Weirdest Hardware  
+> 🏁 Most Useful Fine‑Tune  
 
 Built with gpt-oss-20b and gpt-oss-120b weights from [Hugging Face](https://huggingface.co/openai/gpt-oss-120b) running on [groq](https://groq.com/)'s LPU hardware. Fine tuned with data-set from [TBD]. WIP!
 
@@ -90,7 +90,7 @@ For details, see `docs/Idea.md`.
 
 ## 🗺️ Roadmap (MVP milestones)
 
-- [ ] Skeleton: Docker Compose, Django+Ninja+Channels, Tauri shell, health checks
+- [x] Skeleton: Docker Compose, Django+Ninja+Channels, Tauri shell, health checks
 - [ ] Realtime STT: audio capture, VAD, streaming ASR, diarization, transcript view
 - [ ] Overlay UX: context cards, keyboard control, streaming UI, polish
 - [ ] RAG: ingestion → embeddings → search; Groq via LiteLLM; card generation
