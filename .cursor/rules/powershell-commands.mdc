@@ -1,0 +1,16 @@
+---
+description: Executing Terminal CLI and shell commands
+alwaysApply: false
+---
+
+# Powershell Syntax for Terminal Commands
+
+When executing terminal commands, ensure they are compatible with Windows Powershell, as you are working on a Windows environment.
+
+- Use Powershell syntax for all commands.
+- For example, to list files, use `Get-ChildItem` or `ls`.
+- To copy files, use `Copy-Item`.
+- To delete files, use `Remove-Item`.
+- To display file content, use `Get-Content`.
+- When creating multi-line scripts or commands, use backticks (`) for line continuation if needed.
+- To chain commands, use a semicolon (`;`). For example, `Get-ChildItem; Write-Host "Listed files"`.

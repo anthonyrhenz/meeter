@@ -63,6 +63,14 @@ services:
         - VITE_API_SAME_HOST=${VITE_API_SAME_HOST}
     container_name: ${COMPOSE_PROJECT_NAME}_frontend
     env_file: .env
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=300
+      # Optional: expose a public host for Vite dev/HMR (e.g., ngrok domain)
+      - VITE_ALLOWED_HOSTS=${VITE_ALLOWED_HOSTS}
+      - VITE_PUBLIC_HOST=${VITE_PUBLIC_HOST}
+      - VITE_PUBLIC_PROTOCOL=${VITE_PUBLIC_PROTOCOL}
+      - VITE_HMR_CLIENT_PORT=${VITE_HMR_CLIENT_PORT}
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
