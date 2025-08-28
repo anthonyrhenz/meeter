@@ -14,6 +14,3 @@ celery[redis]>=5.3,<5.4
 redis>=5.0
 
 pgvector>=0.2.4
-
-posthog>=6
-sentry-sdk[django]>=1.39

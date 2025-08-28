@@ -7,7 +7,6 @@ This repo is a fast, single-origin dev setup:
 - Frontend: React + Vite + Tauri v2 (desktop shell optional during web dev)
 - Infra: Nginx (proxies `/api` and `/ws`), Docker Compose orchestrates all services
 - LLM: LiteLLM reverse proxy → Groq (config in `litellm_config.yaml`)
-- Analytics (optional): PostHog ready on the frontend
 
 See the product/tech spec in `docs/Idea.md`. High-level repo map is in `README.md`.
 
@@ -67,6 +66,8 @@ curl http://localhost/api/health
 - Celery: `CELERY_BROKER_URL`, `CELERY_RESULT_BACKEND`
 - LiteLLM: `LITELLM_MASTER_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`
 - Frontend: `VITE_API_SAME_HOST=true` for single origin; set `VITE_API_URL` only if cross-origin
+
+<!-- Tailwind section removed: project uses plain CSS styles in `frontend/src/styles.css`. -->
 
 ### Common dev commands
 
@@ -145,7 +146,6 @@ ws.onopen = () => ws.send("ping");
 ### Frontend notes
 
 - In dev, Vite runs inside Docker and is proxied via Nginx — just open `http://localhost/`
-- PostHog is auto-initialized if `VITE_PUBLIC_POSTHOG_KEY` is set
 - To run Tauri locally (optional desktop shell): ensure Rust + build tools, then run from `frontend/`
 
 ```bash
