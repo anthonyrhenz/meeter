@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: pgvector/pgvector:pg16
@@ -30,7 +28,16 @@ services:
       sh -c "
         echo 'Waiting for db...' && sleep 5 &&
         python manage.py migrate &&
-        uvicorn meeter_platform.asgi:application --host 0.0.0.0 --port 8000 --reload
+        uvicorn meeter_platform.asgi:application --host 0.0.0.0 --port 8000 \
+          --reload \
+          --reload-dir /app/meeter_platform \
+          --reload-dir /app/apps \
+          --reload-include '*.py' \
+          --reload-exclude '*/__pycache__/*' \
+          --reload-exclude '*/.mypy_cache/*' \
+          --reload-exclude '*/.pytest_cache/*' \
+          --reload-exclude '*/.venv/*' \
+          --reload-exclude '*/node_modules/*'
       "
     volumes:
       - ./backend:/app
@@ -39,6 +46,8 @@ services:
       CELERY_BROKER_URL: ${CELERY_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
       CHANNELS_REDIS_URL: ${CHANNELS_REDIS_URL}
+      # Ensure watchfiles uses polling-friendly approach in Docker/Windows scenarios
+      WATCHFILES_FORCE_POLLING: "true"
     depends_on: [db, redis]
     networks: [meeter]
 
@@ -74,6 +83,8 @@ services:
     command: npm run dev -- --host
     volumes:
       - ./frontend:/app
+      # Prevent watching heavy Rust artifacts; mount as anonymous volume to mask host path
+      - /app/src-tauri/target
       - /app/node_modules
     networks: [meeter]
 

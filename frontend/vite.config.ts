@@ -35,6 +35,8 @@ export default defineConfig({
     watch: {
       usePolling,
       interval: pollingInterval,
+      // Avoid watching Rust build artifacts inside Tauri target directory
+      ignored: ["**/src-tauri/target/**"],
     },
     // Allow external hosts (e.g., meeter.ngrok.dev) to reach dev server through a reverse proxy
     ...(allowedHosts.length ? { allowedHosts } : {}),
