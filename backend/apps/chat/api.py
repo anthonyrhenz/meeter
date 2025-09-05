@@ -102,7 +102,7 @@ def _load_history_payload(conversation_id: int) -> list[dict]:
     )
 
 
-async def _maybe_set_title(conversation_id: int, last_user: str, assistant_text: str) -> None:
+async def _maybe_set_title(conversation_id: int, last_user: str, assistant_text: str) -> Optional[str]:
     @sync_to_async(thread_sensitive=True)
     def _needs_title() -> bool:
         conv = Conversation.objects.get(pk=conversation_id)
@@ -110,9 +110,9 @@ async def _maybe_set_title(conversation_id: int, last_user: str, assistant_text:
 
     try:
         if not await _needs_title():
-            return
+            return None
     except Conversation.DoesNotExist:
-        return
+        return None
 
     model = "groq-llama3-8b"
 
@@ -145,14 +145,19 @@ async def _maybe_set_title(conversation_id: int, last_user: str, assistant_text:
     except Exception:
         title = ""
 
+    # Fallback: derive a short 5-word summary from user text if LLM failed
     if not title:
-        return
+        base_text = (last_user or assistant_text or "").strip()
+        words = base_text.split()
+        fallback = " ".join(words[:5]).strip()
+        title = fallback or "New Conversation"
 
     @sync_to_async(thread_sensitive=True)
     def _save_title() -> None:
         Conversation.objects.filter(pk=conversation_id).update(title=title)
 
     await _save_title()
+    return title
 
 
 @router.post("/stream", response={200: None, 400: ErrorOut, 404: ErrorOut})
@@ -327,6 +332,9 @@ async def chat_stream(request, body: ChatRequest):
 
                     await sync_to_async(_save_assistant, thread_sensitive=True)()
                     await _maybe_set_title(conversation_id, last_user_text, assistant_text)
+                else:
+                    # No assistant content produced (provider error). Try to set a fallback title from last user.
+                    await _maybe_set_title(conversation_id, last_user_text, "")
                 break
             if isinstance(item, Exception):
                 # If content was already sent, swallow and end; if not, emit a clean error then close.
@@ -427,6 +435,9 @@ async def chat_complete(request, body: ChatRequest):
 
         await _save_assistant_complete()
         await _maybe_set_title(conversation_id, last_user_text, content)
+    else:
+        # Even without content, try to set a fallback title from the user's text
+        await _maybe_set_title(conversation_id, last_user_text, "")
 
     # Include conversation id in the returned JSON for clients of non-streaming endpoint
     try:

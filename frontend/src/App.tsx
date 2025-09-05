@@ -32,26 +32,7 @@ export default function App() {
     const [historyItems, setHistoryItems] = useState<Array<{ id: number; title: string | null; message_count: number; updated_at: string }>>([])
     const historyRef = React.useRef<HTMLDivElement | null>(null)
 
-    // Load persisted Mirai state on app mount
-    useEffect(() => {
-        try {
-            const raw = localStorage.getItem(MIRAI_STORAGE_KEY)
-            if (raw) {
-                const parsed = JSON.parse(raw)
-                if (parsed && typeof parsed === 'object') {
-                    if (typeof parsed.conversationId === 'number') {
-                        setMiraiConversationId(parsed.conversationId)
-                    }
-                    if (Array.isArray(parsed.messages)) {
-                        setMiraiMessages(parsed.messages as ChatMessage[])
-                    }
-                    if (typeof parsed.title === 'string') {
-                        setMiraiConversationTitle(parsed.title)
-                    }
-                }
-            }
-        } catch { }
-    }, [])
+    // On fresh load, start with no conversation selected. We still persist changes below.
 
     // Persist Mirai state on change
     useEffect(() => {
@@ -279,6 +260,15 @@ export default function App() {
                                         {miraiConversationTitle || (miraiConversationId ? `Conversation #${miraiConversationId}` : 'New Conversation')}
                                     </div>
                                     <div className="chat__header-actions">
+                                        <button
+                                            type="button"
+                                            className="btn"
+                                            onClick={() => { setMiraiConversationId(null); setMiraiMessages([]); setMiraiConversationTitle(null) }}
+                                            title="Start a new conversation"
+                                        >
+                                            <span className="icon-btn__glyph" aria-hidden>➕</span>
+                                            <span>New</span>
+                                        </button>
                                         <button type="button" className="btn chat__history-btn" onClick={openHistory} aria-haspopup="menu" aria-expanded={isHistoryOpen}>
                                             <span className="icon-btn__glyph" aria-hidden>🕘</span>
                                             <span>History</span>
@@ -474,11 +464,6 @@ function MiraiChat({
                 const parsed = Number(headerConvId)
                 if (!Number.isNaN(parsed) && parsed > 0) {
                     setConversationId(parsed)
-                    // Attempt to refresh title lazily after stream settles
-                    fetch(`/api/chat/conversations/${parsed}`, { credentials: 'include' })
-                        .then(r => r.ok ? r.json() : null)
-                        .then(d => { if (d && d.title) setConversationTitle(d.title) })
-                        .catch(() => { })
                 }
             }
 
@@ -538,6 +523,19 @@ function MiraiChat({
         } finally {
             setIsSending(false)
             controllerRef.current = null
+            // After stream completes or fails, try to refresh the title if we have an id
+            try {
+                const id = (typeof conversationId === 'number' && conversationId > 0) ? conversationId : null
+                if (id) {
+                    const r = await fetch(`/api/chat/conversations/${id}`, { credentials: 'include' })
+                    if (r.ok) {
+                        const d = await r.json()
+                        if (d && typeof d.title === 'string' && d.title.trim()) {
+                            setConversationTitle(d.title)
+                        }
+                    }
+                }
+            } catch { }
         }
     }
 

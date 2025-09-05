@@ -28,16 +28,7 @@ services:
       sh -c "
         echo 'Waiting for db...' && sleep 5 &&
         python manage.py migrate &&
-        uvicorn meeter_platform.asgi:application --host 0.0.0.0 --port 8000 \
-          --reload \
-          --reload-dir /app/meeter_platform \
-          --reload-dir /app/apps \
-          --reload-include '*.py' \
-          --reload-exclude '*/__pycache__/*' \
-          --reload-exclude '*/.mypy_cache/*' \
-          --reload-exclude '*/.pytest_cache/*' \
-          --reload-exclude '*/.venv/*' \
-          --reload-exclude '*/node_modules/*'
+        uvicorn meeter_platform.asgi:application --host 0.0.0.0 --port 8000 --reload --reload-delay 0.5
       "
     volumes:
       - ./backend:/app
